@@ -81,6 +81,70 @@ El siguiente comando te permitirá que todo está instalado correctamente.
 8) y creamos en contenedor por medio del comando.
 
         sudo docker-compose up -d   
+        
+        
+---- instalacin de una base de datos-
+1) Crearmoes una carpeta con el nombre BaseDeDatos y una llamada sql-scripts
+
+        mkdir BasesDeDatos
+        mkdir sql-scripts
+        
+         
+      
+2) Ingresaremos a la carpeta creada y creamos un archivo llamado tablas.sql con el siguiente contenido
+
+
+        CREATE TABLE PRODUCTO(
+        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        nombre CHAR(30) NOT NULL,
+        precio INT NOT NULL,
+        cantidad INT NOT NULL,
+        PRIMARY KEY (id)
+        );
+
+3) Creamos un documento dockerfiel
+    
+      
+        nano dockerfile
+4) Dentro del documento dockerfile agregaremos el siguiente contenido.
+
+        FROM mysql:5.7
+        ENV MYSQL_DATABASE PROYECTOSEMINARIO1
+        COPY ./sql-scripts/ /docker-entrypoint-initdb.d/
+        
+5) Ya con el dockerfile encontrado procederemos la imagen a utilizar dentro de nuestro sistema.
+
+        docker build -t basef2 .
+        
+6) Ahora crearemos un archivo .yml con el nombre de docker-compose
+
+       nano docker-compose.yml
+       
+7)Agregamos el contenido siguiente al archivo creado con anterioridad.
+
+    version: '3.3'
+    services:
+    db:
+    image: basef2
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: '123456789'
+      MYSQL_ROOT_PASSWORD: '123456789'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+    volumes:
+      my-db:
+
+8) y creamos en contenedor por medio del comando.
+
+        sudo docker-compose up -d          
+        
 
 # TERRAFORM
 Cuanto más grande se vuelve un servicio, más complicado se hace la administración y la operación del mismo de manera manual. La solución a todos estos problemas pasaría por disponer de una herramienta que nos permita modelar nuestra infraestructura como código, pero que sea agnóstica al entorno cloud donde se ejecute.
